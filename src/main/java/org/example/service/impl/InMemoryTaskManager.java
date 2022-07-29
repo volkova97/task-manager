@@ -33,22 +33,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void update(int id, TaskStatuses status) {
-        switch (status) {
-            case IN_PROGRESS -> {
+        if (( status == TaskStatuses.NEW ||
+                status == TaskStatuses.IN_PROGRESS ) &&
+                        memoryMap.get(id).getStatus() == TaskStatuses.DONE) {
 
+            memoryMap.get(id).setStatus(TaskStatuses.IN_PROGRESS);
+
+        } else if (status == TaskStatuses.IN_PROGRESS &&
+                memoryMap.get(id).getStatus() == TaskStatuses.NEW) {
+
+            memoryMap.get(id).setStatus(TaskStatuses.IN_PROGRESS);
+
+        } else if (status == TaskStatuses.DONE &&
+                ( memoryMap.get(id).getStatus() == TaskStatuses.NEW ||
+                        memoryMap.get(id).getStatus() == TaskStatuses.IN_PROGRESS )) {
+
+            int size = getAllTasksByEpic(id).size();
+            List<Task> allTasks = getAllTasksByEpic(id);
+            TaskStatuses firstTaskStatus = allTasks.get(0).getStatus();
+            for (int i = 1; i < size; i++) {
+                if (allTasks.get(i).getStatus() != firstTaskStatus) {
+                    break;
+                }
+                memoryMap.get(id).setStatus(TaskStatuses.DONE);
             }
-
         }
-
-        int size = getAllTasksByEpic(id).size();
-        List<Task> allTasks = getAllTasksByEpic(id);
-        TaskStatuses firstTaskStatus = allTasks.get(0).getStatus();
-        for (int i = 1; i < size; i++) {
-            if (allTasks.get(i).getStatus() != firstTaskStatus) {
-                break;
-            }
-        }
-//        getById(id).setStatus(firstTaskStatus);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.example.model;
 
+import org.example.service.impl.Managers;
+
 public abstract class Task {
     protected int id;
     protected TaskStatuses status;
@@ -39,5 +41,9 @@ public abstract class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setStatus(TaskStatuses status) {
+        this.status = status;
     }
 }
